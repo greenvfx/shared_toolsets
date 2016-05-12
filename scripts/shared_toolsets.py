@@ -4,9 +4,10 @@
 # Vitaly Musatov 
 # emails:
 # latest.green@gmail.com
-# vit.muusatov@gmail.com
+# vit.musatov@gmail.com
 # Use setSharedToolSetsPath function to setup location of shared folder, folder must be called "SharedToolSets", but you can place it anywhere.
 # 8 may 2016
+# version 0.1
 
 import os
 import nuke
