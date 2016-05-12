@@ -1,0 +1,12 @@
+set cut_paste_input [stack 0]
+version 9.0 v8
+StickyNote {
+ inputs 0
+ name StickyNote1
+ tile_color 0xff9e0fff
+ label "SharedToolSets\nis working!"
+ note_font_size 100
+ selected true
+ xpos -371
+ ypos -200
+}
