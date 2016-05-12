@@ -1,10 +1,11 @@
 # Shared ToolSets
 # Based on Nuke's ToolSets 
+# Copyright (c) 2009 The Foundry Visionmongers Ltd.  All Rights Reserved.
 # Vitaly Musatov 
 # emails:
 # latest.green@gmail.com
 # vit.muusatov@gmail.com
-# Use setSharedToolSetsPath to setup location of shared folder, folder must be called "SharedToolSets", but you can place it anywhere.
+# Use setSharedToolSetsPath function to setup location of shared folder, folder must be called "SharedToolSets", but you can place it anywhere.
 # 8 may 2016
 
 import os
