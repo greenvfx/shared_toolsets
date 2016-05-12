@@ -1,4 +1,5 @@
 # shared_toolsets
+# Setup your SharedToolSets folder here
 import shared_toolsets
 toolbar = nuke.menu("Nodes")
 sharedToolSetsPath = "C:/some/path/SharedToolSets" # or "/some/path/SharedToolSets"
