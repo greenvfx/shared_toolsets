@@ -1,0 +1,300 @@
+#! /Applications/Nuke7.0v10/NukeX7.0v10.app/../Nuke7.0v10.app/Contents/MacOS/Nuke7.0v10 -nx
+version 7.0 v10
+define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
+<layout version="1.0">
+    <window x="0" y="0" w="1920" h="1200" fullscreen="1" screen="0">
+        <splitter orientation="1">
+            <split size="1423"/>
+            <splitter orientation="1">
+                <split size="40"/>
+                <dock id="" hideTitles="1" activePageId="Toolbar.1">
+                    <page id="Toolbar.1"/>
+                </dock>
+                <split size="1379"/>
+                <splitter orientation="2">
+                    <split size="797"/>
+                    <dock id="" activePageId="DAG.1">
+                        <page id="DAG.1"/>
+                    </dock>
+                    <split size="399"/>
+                    <dock id="" activePageId="DopeSheet.1">
+                        <page id="Script Editor.1"/>
+                        <page id="Curve Editor.1"/>
+                        <page id="DopeSheet.1"/>
+                    </dock>
+                </splitter>
+            </splitter>
+            <split size="493"/>
+            <splitter orientation="2">
+                <split size="1022"/>
+                <dock id="" activePageId="Properties.1">
+                    <page id="Properties.1"/>
+                </dock>
+                <split size="174"/>
+                <dock id="" hideTitles="1" activePageId="uk.co.thefoundry.DiskCache">
+                    <page id="uk.co.thefoundry.DiskCache"/>
+                </dock>
+            </splitter>
+        </splitter>
+    </window>
+    <window x="1920" y="0" w="1920" h="1200" fullscreen="1" screen="1">
+        <splitter orientation="1">
+            <split size="1920"/>
+            <dock id="" activePageId="Viewer.1">
+                <page id="Viewer.1"/>
+            </dock>
+        </splitter>
+    </window>
+</layout>
+}
+Root {
+ inputs 0
+ name /Volumes/da-studio/Tools/nuke_plugins/wip/perspective.nk
+ frame 50
+ fps 25
+ format "2048 872 0 0 2048 872 1 DA_2K"
+ proxy_format "1024 436 0 0 1024 436 1 DA_1K"
+}
+CheckerBoard2 {
+ inputs 0
+ linewidth 8.3
+ name CheckerBoard2
+ xpos -475
+ ypos -363
+}
+Noise {
+ inputs 0
+ size 14
+ zoffset 0.46
+ gamma 0.035
+ translate {0 {frame*2.5}}
+ center {1024 436}
+ name Noise2
+ xpos -260
+ ypos -392
+}
+Ramp {
+ p0 {1024 0}
+ p1 {1024 872}
+ name Ramp2
+ xpos -260
+ ypos -294
+}
+Grade {
+ channels rgba
+ gamma {{parent.Grade2.gamma}}
+ name Grade3
+ xpos -260
+ ypos -242
+}
+set N1d0c04b0 [stack 0]
+Mirror {
+ Vertical true
+ name Mirror2
+ xpos -150
+ ypos -182
+}
+CornerPin2D {
+ to1 {0 0}
+ to2 {2048 0}
+ to3 {{parent.Rectangle1.area.r} {parent.Rectangle1.area.y}}
+ to4 {{parent.Rectangle1.area.x} {parent.Rectangle1.area.y}}
+ invert false
+ from1 {0 0}
+ from2 {2048 0}
+ from3 {2048 872}
+ from4 {0 872}
+ name CornerPin2D1
+ xpos -150
+ ypos 15
+}
+push $N1d0c04b0
+CornerPin2D {
+ to1 {{parent.Rectangle1.area.x} {parent.Rectangle1.area.t}}
+ to2 {{parent.Rectangle1.area.r x1 1245} {parent.Rectangle1.area.t x1 559}}
+ to3 {2048 872}
+ to4 {0 872}
+ invert false
+ from1 {0 0}
+ from2 {2048 0}
+ from3 {2048 872}
+ from4 {0 872}
+ name CornerPin2D2
+ xpos -260
+ ypos 15
+}
+Noise {
+ inputs 0
+ size {{parent.Noise2.size}}
+ zoffset 0.58
+ gamma 0.03
+ translate {{-frame*5} 0}
+ center {1024 436}
+ name Noise1
+ xpos -471
+ ypos -237
+}
+Ramp {
+ p0 {2048 436}
+ p1 {0 436}
+ name Ramp1
+ xpos -480
+ ypos -176
+}
+Grade {
+ channels rgba
+ name Grade2
+ xpos -480
+ ypos -141
+}
+set N42511210 [stack 0]
+Mirror {
+ Horizontal true
+ name Mirror1
+ xpos -370
+ ypos -43
+}
+CornerPin2D {
+ to1 {{parent.Rectangle1.area.r} {parent.Rectangle1.area.y}}
+ to2 {2048 0}
+ to3 {2048 872}
+ to4 {{parent.Rectangle1.area.r} {parent.Rectangle1.area.t}}
+ invert false
+ from1 {0 0}
+ from2 {2048 0}
+ from3 {2048 872}
+ from4 {0 872}
+ name CornerPin2D4
+ xpos -370
+ ypos 15
+}
+push $N42511210
+CornerPin2D {
+ to1 {0 0}
+ to2 {{parent.Rectangle1.area.x} {parent.Rectangle1.area.y}}
+ to3 {{parent.Rectangle1.area.x} {parent.Rectangle1.area.t}}
+ to4 {0 872}
+ invert false
+ filter Simon
+ from1 {0 0}
+ from2 {2048 0}
+ from3 {2048 872}
+ from4 {0 872}
+ name CornerPin2D3
+ xpos -480
+ ypos 15
+}
+Constant {
+ inputs 0
+ channels rgb
+ name Constant1
+ xpos -590
+ ypos -321
+}
+Noise {
+ size {{parent.Noise2.size}}
+ zoffset 0.58
+ translate {{-frame*5} 0}
+ center {1024 436}
+ name Noise3
+ xpos -615
+ ypos -195
+ disable true
+}
+Rectangle {
+ area {{curve x2 1322 x33 642 x60 660 x88 1002} {curve x2 536 x33 434 x60 226 x88 600} {curve x2 1482 x33 802 x60 820 x88 1162} {curve x2 602 x33 500 x60 292 x88 666}}
+ color 0
+ name Rectangle1
+ xpos -674
+ ypos 183
+}
+Merge2 {
+ inputs 2
+ name Merge1
+ xpos -480
+ ypos 183
+}
+Merge2 {
+ inputs 2
+ name Merge2
+ xpos -370
+ ypos 183
+}
+Merge2 {
+ inputs 2
+ name Merge3
+ xpos -260
+ ypos 183
+}
+Merge2 {
+ inputs 2
+ name Merge4
+ xpos -150
+ ypos 183
+}
+set N131ec3d0 [stack 0]
+Median {
+ size 1
+ ignore_top_line false
+ name Median1
+ xpos -23
+ ypos 183
+ disable true
+}
+Blur {
+ size 20
+ name Blur1
+ xpos 136
+ ypos 178
+ disable true
+}
+Dot {
+ name Dot1
+ xpos 445
+ ypos 186
+}
+set N42515320 [stack 0]
+push $N42515320
+CheckerBoard2 {
+ inputs 0
+ color0 {0.1000000015 0.1000000015 0.1000000015 1}
+ color2 {0.1000000015 0.1000000015 0.1000000015 1}
+ name CheckerBoard1
+ xpos 634
+ ypos 15
+}
+Grade {
+ inputs 1+1
+ multiply 0.09
+ name Grade1
+ xpos 645
+ ypos 122
+ disable true
+}
+Copy {
+ inputs 2
+ from0 rgba.red
+ to0 forward.u
+ from1 rgba.green
+ to1 forward.v
+ name Copy1
+ xpos 634
+ ypos 172
+}
+IDistort {
+ uv forward
+ uv_offset 0.385
+ uv_scale 57
+ name IDistort1
+ xpos 634
+ ypos 274
+}
+push $N131ec3d0
+Viewer {
+ frame 50
+ fps 25
+ input_process false
+ name Viewer1
+ xpos 508
+ ypos -202
+}
