@@ -3,11 +3,14 @@
 # Copyright (c) 2009 The Foundry Visionmongers Ltd.  All Rights Reserved.
 # Vitaly Musatov 
 # emails:
-# latest.green@gmail.com
-# vit.musatov@gmail.com
+# latest.green[at]gmail[dot]com
+# vit.musatov[at]gmail[dot]com
 # Use setSharedToolSetsPath function to setup location of shared folder, folder must be called "SharedToolSets", but you can place it anywhere.
-# 8 may 2016
-# version 0.1
+# 22 may 2016
+# version 0.2
+# History:
+# 0.1 - Made base functions
+# 0.2 - Instead of delete menu added modify menu. There you can edit, rename(move) and delete toolsets.
 
 import os
 import nuke
@@ -20,10 +23,22 @@ def setSharedToolSetsPath(path):
   global SHARED_TOOLSET_PATH
   SHARED_TOOLSET_PATH = path
 
-
 class CreateToolsetsPanel(nukescripts.PythonPanel):
-  def __init__(self):
-    nukescripts.PythonPanel.__init__( self, 'Create ToolSet', 'uk.co.thefoundry.CreateToolset')
+  # rename is bool var 
+
+  def __init__(self, fullFilePath, rename):
+    
+    self.rename = rename
+    self.fullFilePath = fullFilePath
+
+    if rename == False:
+      self.namePanel = 'Create ToolSet'
+      self.nameOkButton = 'Create'
+    else:
+      self.namePanel = 'Rename ToolSet'
+      self.nameOkButton = 'Rename'
+    
+    nukescripts.PythonPanel.__init__( self, self.namePanel, 'uk.co.thefoundry.Toolset')
     
     # CREATE KNOBS
     self.userFolders = []
@@ -35,7 +50,7 @@ class CreateToolsetsPanel(nukescripts.PythonPanel):
     self.menuPath = nuke.String_Knob('itemName', 'Menu item:')
     self.menuPath.setFlag(0x00001000)  
     self.menuPath.setTooltip("ToolSet name. Use the '/' character to create a new submenu for this ToolSet, eg to create a ToolSet named 'Basic3D' and place it in a new submenu '3D', type '3D/Basic3D'. Once created the 3D menu will appear in the ToolSet menu.")
-    self.okButton = nuke.PyScript_Knob ('create', 'Create')
+    self.okButton = nuke.PyScript_Knob (self.nameOkButton.lower(), self.nameOkButton)
     #self.okButton.setToolTip("Create a ToolSet from the currently selected nodes with the given name")
     self.okButton.setFlag(0x00001000)
     self.cancelButton = nuke.PyScript_Knob ('cancel', 'Cancel')
@@ -45,7 +60,12 @@ class CreateToolsetsPanel(nukescripts.PythonPanel):
     self.addKnob(self.menuPath)
     self.addKnob(self.okButton)
     self.addKnob(self.cancelButton)
-    
+
+    if rename == True:
+      toolSetPath = fullFilePath.replace(SHARED_TOOLSET_PATH + "/", '') 
+      toolSetPath = toolSetPath.replace(".nk", '') 
+      self.menuPath.setValue(toolSetPath)
+
   # BUILD A LIST Of PRE_CREATED FOLDER LOCATIONS
   def buildFolderList(self, fullPath, menuPath):
     filecontents = sorted(os.listdir(fullPath), key=str.lower)
@@ -55,28 +75,42 @@ class CreateToolsetsPanel(nukescripts.PythonPanel):
         self.buildFolderList(fullPath + '/' + group, menuPath + group + '/')              
 
   def createPreset(self):
-    if self.createSharedToolset(str(self.menuPath.value())):
+    if self.renameCreateSharedToolset(str(self.menuPath.value()), False):
+    #if self.createSharedToolset(str(self.menuPath.value())):
+      self.finishModalDialog( True )
+  
+  def renamePreset(self):
+    if self.renameCreateSharedToolset(str(self.menuPath.value()), True):
       self.finishModalDialog( True )
     
-  def createSharedToolset(self, name):
+  def renameCreateSharedToolset(self, name, rename):
     ret = False
+    
     nameList = name.split('/')
     fileName = nameList[-1]
+    
     del nameList[-1]
     dirs = '/'.join(nameList)
+    
     fullPath = posixpath.join(SHARED_TOOLSET_PATH, dirs)
-    print fullPath 
-    os.path.isdir(fullPath)
+    
     try:
       if not os.path.isdir(fullPath):
         os.makedirs( fullPath )
+      
       filePath = posixpath.join(fullPath, fileName + '.nk')
       
       if not os.path.exists(filePath):
-        nuke.nodeCopy(filePath)
+        if self.rename == True:
+          os.rename(self.fullFilePath, filePath)
+        else:
+          nuke.nodeCopy(filePath)
 
       elif nuke.ask('Overwrite existing \n %s?' % filePath):
-        nuke.nodeCopy(filePath)
+        if self.rename == True:
+          os.rename(self.fullFilePath, filePath)
+        else:
+          nuke.nodeCopy(filePath)
 
       ret = True
     except:
@@ -84,25 +118,40 @@ class CreateToolsetsPanel(nukescripts.PythonPanel):
     return ret
 
   def getPresetPath(self):
+
+    # Added a bit of usability. Let's preserve a toolset's name
+    tempListToolsetName = self.menuPath.value().split('/')
+    tempToolsetName = tempListToolsetName[-1]
+
     if str(self.menuItemChoice.value()) == "root":
-      self.menuPath.setValue("")
+      self.menuPath.setValue( ""+ tempToolsetName)
     else:
-      self.menuPath.setValue(self.menuItemChoice.value() + "/")
+      self.menuPath.setValue(self.menuItemChoice.value() + "/" + tempToolsetName)
 
   def knobChanged( self, knob ):
     if knob == self.okButton:
-      self.createPreset()
+      if self.rename == True:
+        self.renamePreset()
+      else:
+        self.createPreset()
     elif knob == self.cancelButton:
       self.finishModalDialog( False )
     elif knob == self.menuItemChoice:
       self.getPresetPath()
 
 # NUKESCRIPT FUNCTIONS	  
+def renameToolset(fullFilePath):
+  p = CreateToolsetsPanel(fullFilePath, True)
+  p.showModalDialog()
+  rootPath = SHARED_TOOLSET_PATH
+  checkForEmptyToolsetDirectories(rootPath)
+  refreshToolsetsMenu()
+  print fullFilePath
     
 def addToolsetsPanel():
   res = False
   if nuke.nodesSelected() == True:
-    res = CreateToolsetsPanel().showModalDialog()
+    res = CreateToolsetsPanel(None, False).showModalDialog()
     # now force a rebuild of the menu
     refreshToolsetsMenu()
   else:
@@ -117,7 +166,6 @@ def deleteToolset(rootPath, fileName):
     checkForEmptyToolsetDirectories(rootPath)
     # now force a rebuild of the menu
     refreshToolsetsMenu()
-
 
 def checkForEmptyToolsetDirectories(currPath):
   removed = True
@@ -138,11 +186,11 @@ def refreshToolsetsMenu():
 
 def createToolsetsMenu(toolbar):
   m = toolbar.addMenu(name = "SharedToolSets", icon = "SharedToolSets.png")
-  m.addCommand("Create", "shared_toolsets.addToolsetsPanel()", "", icon="ToolsetCreate.png")
+  m.addCommand("Create", "shared_toolsets.addToolsetsPanel()", "", icon="SharedToolSets_Create.png")
   m.addCommand("-", "", "")
   if populateToolsetsMenu(m, False):
     m.addCommand("-", "", "")  
-    n = m.addMenu("Delete", "ToolsetDelete.png")
+    n = m.addMenu("Modify", "SharedToolSets_Modify.png")
     populateToolsetsMenu(n, True)
   m.addCommand('Refresh', 'shared_toolsets.refreshToolsetsMenu()', icon = "SharedToolSets_Refresh.png")
 
@@ -199,7 +247,11 @@ def createToolsetMenuItems(m, rootPath, fullPath, delete, allToolsetsList, isLoc
         if extPos != -1 and extPos == len(group) - 3:
           group = group.replace('.nk', '')
           if delete:
-            m.addCommand(group, 'shared_toolsets.deleteToolset("%s", "%s")' % (rootPath, fullFileName), "")
+            subM = m.addMenu(group)
+            subM.addCommand("Edit", 'nuke.scriptOpen("%s")' % fullFileName, "")
+            subM.addCommand("Rename", 'shared_toolsets.renameToolset("%s")' % fullFileName, "")
+            subM.addCommand("-", "", "")
+            subM.addCommand("Delete", 'shared_toolsets.deleteToolset("%s", "%s")' % (rootPath, fullFileName), "")
             retval = True
           else:
             # get the filename below toolsets
