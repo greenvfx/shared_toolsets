@@ -7,10 +7,12 @@
 # vit.musatov[at]gmail[dot]com
 # Use setSharedToolSetsPath function to setup location of shared folder, folder must be called "SharedToolSets", but you can place it anywhere.
 # 22 may 2016
-# version 1.1
+# version 0.2
 # History:
 # 0.1 - Made base functions
 # 1.1 - Instead of delete menu added modify menu. There you can edit, rename(move) and delete toolsets.
+# 1.2 - Minor bug fixes. Delete .nk~ files and fixed bug with overwriting of an existed file.
+
 
 import os
 import nuke
@@ -104,12 +106,15 @@ class CreateToolsetsPanel(nukescripts.PythonPanel):
         if self.rename == True:
           os.rename(self.fullFilePath, filePath)
         else:
+          # create way
           nuke.nodeCopy(filePath)
 
       elif nuke.ask('Overwrite existing \n %s?' % filePath):
         if self.rename == True:
+          os.remove(filePath)
           os.rename(self.fullFilePath, filePath)
         else:
+          # create way
           nuke.nodeCopy(filePath)
 
       ret = True
@@ -243,6 +248,11 @@ def createToolsetMenuItems(m, rootPath, fullPath, delete, allToolsetsList, isLoc
     for group in filecontents:
       fullFileName = "/".join([fullPath, group])
       if not os.path.isdir(fullFileName):
+        
+        # Delete file with an extention ".nk~" created by edit.
+        if ".nk~" in group:
+          os.remove(fullFileName)
+        
         extPos = group.find(".nk")
         if extPos != -1 and extPos == len(group) - 3:
           group = group.replace('.nk', '')
