@@ -34,4 +34,5 @@ if nuke.GUI:
   shared_toolsets.setSharedToolSetsPath(sharedToolSetsPath)
   shared_toolsets.addFileFilter(toolSetsFilenameFilter)
 
+  toolbar = nuke.menu("Nodes")
   shared_toolsets.createToolsetsMenu(toolbar)
