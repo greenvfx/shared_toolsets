@@ -6,14 +6,15 @@
 # latest.green[at]gmail[dot]com
 # vit.musatov[at]gmail[dot]com
 # Use setSharedToolSetsPath function to setup location of shared folder, folder must be called "SharedToolSets", but you can place it anywhere.
-# 22 may 2016
-# version 1.2
+# 27 August 2017
+# version 1.5
 # History:
 # 0.1 - Made base functions
 # 1.1 - Instead of delete menu added modify menu. There you can edit, rename(move) and delete toolsets.
 # 1.2 - Minor bug fixes. Delete .nk~ files and fixed a bug with overwriting of an existed file.
 # 1.3 - Added tooltip in menu. Crossplatform way to define the root folder. Added undistractive filefilter.
-
+# 1.4 - Opps... into menu.py added this line of code: toolbar = nuke.menu('Nodes') 
+# 1.5 - Support of Nuke 11 and backward compatibility of previous versions.
 
 import os
 import sys
@@ -21,10 +22,18 @@ import nuke
 import nukescripts
 import posixpath
 
+PYSIDE_VERSION = 0
+
 try:
   from PySide import QtGui
+  from PySide.QtGui import QApplication
+  PYSIDE_VERSION = 1
 except:
   from PySide2 import QtGui
+  from PySide2.QtWidgets import QApplication
+  PYSIDE_VERSION = 2
+
+
 
 SHARED_TOOLSET_PATH = ""
 FILE_FILTER = None
@@ -240,7 +249,8 @@ def toolsetLoader(fullFileName):
     if FILE_FILTER != None:
       data = fileFilter(fullFileName, FILE_FILTER)
       #TODO: find better way to paste filtred script
-      QtGui.QApplication.clipboard().setText(data)
+      QApplication.clipboard().setText(data)
+
       nuke.nodePaste("%clipboard%") # paste into nuke DAG
     else:
       nuke.loadToolset(fullFileName)
