@@ -7,7 +7,7 @@
 # vit.musatov[at]gmail[dot]com
 # Use setSharedToolSetsPath function to setup location of shared folder, folder must be called "SharedToolSets", but you can place it anywhere.
 # 19 April 2019
-# version 1.5
+# version 1.6
 # History:
 # 0.1 - Made base functions
 # 1.1 - Instead of delete menu added modify menu. There you can edit, rename(move) and delete toolsets.
