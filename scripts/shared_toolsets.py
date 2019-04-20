@@ -6,7 +6,7 @@
 # latest.green[at]gmail[dot]com
 # vit.musatov[at]gmail[dot]com
 # Use setSharedToolSetsPath function to setup location of shared folder, folder must be called "SharedToolSets", but you can place it anywhere.
-# 27 August 2017
+# 19 April 2019
 # version 1.5
 # History:
 # 0.1 - Made base functions
@@ -15,24 +15,15 @@
 # 1.3 - Added tooltip in menu. Crossplatform way to define the root folder. Added undistractive filefilter.
 # 1.4 - Opps... into menu.py added this line of code: toolbar = nuke.menu('Nodes') 
 # 1.5 - Support of Nuke 11 and backward compatibility of previous versions.
+# 1.6 - fixed a bug that caused Nuke crashing when loading of "big" toolsets
 
 import os
 import sys
 import nuke
 import nukescripts
 import posixpath
-
-PYSIDE_VERSION = 0
-
-try:
-  from PySide import QtGui
-  from PySide.QtGui import QApplication
-  PYSIDE_VERSION = 1
-except:
-  from PySide2 import QtGui
-  from PySide2.QtWidgets import QApplication
-  PYSIDE_VERSION = 2
-
+import random
+import string
 
 
 SHARED_TOOLSET_PATH = ""
@@ -174,7 +165,7 @@ class CreateToolsetsPanel(nukescripts.PythonPanel):
     elif knob == self.menuItemChoice:
       self.getPresetPath()
 
-# NUKESCRIPT FUNCTIONS	  
+# NUKESCRIPT FUNCTIONS    
 def renameToolset(fullFilePath):
   p = CreateToolsetsPanel(fullFilePath, True)
   p.showModalDialog()
@@ -244,16 +235,27 @@ def populateToolsetsMenu(m, delete):
     ret = True
   return ret   
 
+def randomStringDigits(stringLength=6):
+    """Generate a random string of letters and digits """
+    lettersAndDigits = string.ascii_letters + string.digits
+    return ''.join(random.choice(lettersAndDigits) for i in range(stringLength))
+
 #COMMENT: warper around loadToolset
 def toolsetLoader(fullFileName):
     if FILE_FILTER != None:
-      data = fileFilter(fullFileName, FILE_FILTER)
-      #TODO: find better way to paste filtred script
-      QApplication.clipboard().setText(data)
-
-      nuke.nodePaste("%clipboard%") # paste into nuke DAG
+        data = fileFilter(fullFileName, FILE_FILTER)
+        # SAVING TEMPORAL TOOLSET | instead of 
+        #QApplication.clipboard().setText(data)
+        #nuke.nodePaste("%clipboard%") is craching with big files BUG
+        randomPostfix = randomStringDigits(10)
+        randomName = posixpath.join( SHARED_TOOLSET_PATH , "temp_toolset_%s.nk" % randomPostfix)
+        saveTempToolSet = open(randomName,"w+")
+        saveTempToolSet.write(data)
+        saveTempToolSet.close()
+        nuke.loadToolset(randomName)
+        os.remove(randomName)
     else:
-      nuke.loadToolset(fullFileName)
+        nuke.loadToolset(fullFileName)
     return True
 
 #COMMENT: modify file before loading 
@@ -266,9 +268,6 @@ def fileFilter(fileName, filterFunc):
             line = filterFunc(line)
         modifiedContentList.append(line)
     modifiedContent = "".join(modifiedContentList)
-    #with open(fileName,'w') as f:
-    #    f.writelines(modifiedContentList)
-    #f.close()
     return modifiedContent
 
 #COMMENT: Main function, construct menuName
