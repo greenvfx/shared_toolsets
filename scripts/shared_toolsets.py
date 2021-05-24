@@ -16,6 +16,7 @@
 # 1.4 - Opps... into menu.py added this line of code: toolbar = nuke.menu('Nodes') 
 # 1.5 - Support of Nuke 11 and backward compatibility of previous versions.
 # 1.6 - fixed a bug that caused Nuke crashing when loading of "big" toolsets
+# 1.7 - added a support of nuke13.x, python 3
 
 import os
 import sys
@@ -172,7 +173,7 @@ def renameToolset(fullFilePath):
   rootPath = SHARED_TOOLSET_PATH
   checkForEmptyToolsetDirectories(rootPath)
   refreshToolsetsMenu()
-  print fullFilePath
+  print(fullFilePath)
     
 def addToolsetsPanel():
   res = False
@@ -337,9 +338,8 @@ def createToolsetMenuItems(m, rootPath, fullPath, delete, allToolsetsList, isLoc
 
             #TODO: get ref module name, now it is static linking
             #current_module = sys.modules[__name__]
-            #print current_module
+            #print(current_module)
             m.addCommand(group, 'shared_toolsets.toolsetLoader("%s")' %  fullFileName, "")            
             retval = True
   return retval
-
 
