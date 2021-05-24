@@ -6,3 +6,5 @@ How to use:
 * Add information from add_me_to_menu.py to your menu.py
 * Add add_me_to_init.py to your init.py
 * Copy "icons" and "scripts" folders to your Nuke's plugin folder
+
+Supports Nuke 13.x and Python 3
