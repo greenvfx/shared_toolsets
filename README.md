@@ -12,5 +12,5 @@ Supports Nuke 13.x and Python 3
 If you have found this tool helpful, please consider supporting me with a donation. <br />
 This will help me maintain current tools and develop new ones. Thanks for your support!
 
-[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](paypal.me/vitmusatov)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/vitmusatov)
 
