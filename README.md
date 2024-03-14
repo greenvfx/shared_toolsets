@@ -1,3 +1,6 @@
+![Static Badge](https://img.shields.io/badge/Nuke_10-PASS-green) ![Static Badge](https://img.shields.io/badge/Nuke_11-PASS-green) ![Static Badge](https://img.shields.io/badge/Nuke_12-PASS-green) ![Static Badge](https://img.shields.io/badge/Nuke_13-PASS-green) ![Static Badge](https://img.shields.io/badge/Nuke_14-PASS-green) ![Static Badge](https://img.shields.io/badge/Nuke_15-PASS-green) 
+![Static Badge](https://img.shields.io/badge/OSX-green) ![Static Badge](https://img.shields.io/badge/WIN-green) ![Static Badge](https://img.shields.io/badge/Linux-green) 
+
 # SharedToolSets
 ### SharedToolSets is an extended version of Nuke's toolsets that allows you to collaborate with your co-workers.  
 
